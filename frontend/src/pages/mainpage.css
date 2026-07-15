@@ -1,0 +1,44 @@
+.main-page{
+    margin: 0 auto;
+    max-width: 1200px;
+    color: var(--text-color);
+}
+
+.current-metrics {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.metric-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    padding: 10px;
+}
+
+.metric {
+    font-size: 1.2em;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    padding: 10px;
+}
+
+.charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    padding: 20px;
+}
+
+.metric-chart {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
