@@ -1,6 +1,6 @@
 .env
 __pycache__
-/backend/db.sqlite3
+backend/db.sqlite3
 
 # Created by https://www.toptal.com/developers/gitignore/api/react,django,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=react,django,python
