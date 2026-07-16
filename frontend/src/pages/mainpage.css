@@ -42,3 +42,13 @@
     background-color: var(--primary-color);
     color: var(--text-color);
 }
+
+.chart-tooltip{
+    background-color: var(--primary-color);
+}
+
+.custom-tooltip{
+    background-color: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    z-index: 1001;
+}

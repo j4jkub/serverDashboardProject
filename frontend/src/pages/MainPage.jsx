@@ -1,7 +1,27 @@
 import {useState, useEffect} from 'react';
 import axios from 'axios';
-import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis, Legend, matchByDataKey, Label, BarChart, Bar, ResponsiveContainer} from 'recharts';
+import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis, Legend, matchByDataKey, Label, BarChart, Bar, ResponsiveContainer, DefaultZIndexes} from 'recharts';
 import './mainpage.css';
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip">
+        <p className="label">{`${label} : ${payload[0].value}`}</p>
+        <div>
+          {payload.map((pld) => (
+            <p style={{ display: "flex", padding: 10 }}>
+              <div style={{ color: pld.fill }}>{pld.value}</div>
+              <div> {pld.dataKey}</div>
+            </p>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 export default function MainPage() {
 
@@ -50,14 +70,16 @@ export default function MainPage() {
         };
 
 
-        return () => clearInterval(interval)
+        return () => {
+            socket.close();
+            clearInterval(interval)
+        }
     }
     ,[]);
         
 
   return (
     <div className="main-page">
-        <h1>Server Dashboard</h1>
         <div className='content'>
             <div className='metric-title'>Server Metrics:</div>
             <div className='current-metrics'>
@@ -67,13 +89,15 @@ export default function MainPage() {
             </div>
             <div className='charts'>
                 <LineChart className='metric-chart'  style={{ width: '100%', aspectRatio: 1.618, maxWidth: 600 }} responsive data={metrics}>
-                    <CartesianGrid strokeDasharray="3 3"/>
-                    <Label style={{ textAnchor: 'middle' }} value="CPU Usage" position="insideTop" />
-                    <Tooltip allowEscapeViewBox={{"x":true,"y":true}} animationDuration={0} formatter={formatPercent}/>
+                    <CartesianGrid strokeDasharray="2 2"/>
+                    <Label  style={{ textAnchor: 'middle' }} value="CPU Usage" position="insideTop"/>
+                    {/* <Tooltip contentStyle={{backgroundColor: '#901a1a'}} wrapperStyle={{zIndex: 1000, backgroundColor: '#901a1a'}} className='chart-tooltip' allowEscapeViewBox={{"x":true,"y":true}} animationDuration={0} formatter={formatPercent}/> */}
+                    <Tooltip allowEscapeViewBox={{"x":true,"y":true}} wrapperStyle={{zIndex: 1000, backgroundColor: '#901a1a'}} animationDuration={0} formatter={formatPercent} content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
+                    {/* <CustomTooltip/> */}
                     <Legend verticalAlign="top" align="right" />
-                    <Line animationMatchBy={matchByDataKey("timestamp")} type="monotone" dot={{}} dataKey="cpu_usage_max" stroke="#d88484" />
-                    <Line animationMatchBy={matchByDataKey("timestamp")} type="monotone" dot={{}} dataKey="cpu_usage_avg" stroke="#d8d184"/>
-                    <Line animationMatchBy={matchByDataKey("timestamp")} type="monotone" dot={{}} dataKey="cpu_usage_min" stroke="#84d8d5" />
+                    <Line isAnimationActive={false} type="monotone" dot={{}} dataKey="cpu_usage_max" stroke="#d88484" />
+                    <Line isAnimationActive={false} type="monotone" dot={{}} dataKey="cpu_usage_avg" stroke="#d8d184"/>
+                    <Line isAnimationActive={false} type="monotone" dot={{}} dataKey="cpu_usage_min" stroke="#84d8d5" />
 
                     <XAxis dataKey="timestamp" />
                     <YAxis type="number" domain={[0, 100]} />
@@ -82,9 +106,9 @@ export default function MainPage() {
                 <LineChart className='metric-chart' style={{ width: '100%', aspectRatio: 1.618, maxWidth: 600 }} responsive data={metrics}>
                     <CartesianGrid />
                     <Label style={{ textAnchor: 'middle' }} value="RAM Usage" position="insideTop" />
-                    <Line animationMatchBy={matchByDataKey("timestamp")} type="monotone" dataKey="ram_usage_max" stroke="#d88484" />
-                    <Line animationMatchBy={matchByDataKey("timestamp")} type="monotone" dataKey="ram_usage_avg"  stroke="#d8d184"/>
-                    <Line animationMatchBy={matchByDataKey("timestamp")} type="monotone" dataKey="ram_usage_min"  stroke="#84d8d5" />
+                    <Line isAnimationActive={false} type="monotone" dataKey="ram_usage_max" stroke="#d88484" />
+                    <Line isAnimationActive={false} type="monotone" dataKey="ram_usage_avg"  stroke="#d8d184"/>
+                    <Line isAnimationActive={false} type="monotone" dataKey="ram_usage_min"  stroke="#84d8d5" />
 
                     <XAxis dataKey="timestamp" />
                     <YAxis type="number" domain={[0, 100]} />
@@ -93,7 +117,7 @@ export default function MainPage() {
                     <CartesianGrid />
                     <Label style={{ textAnchor: 'middle' }} value="Disk Space" position="insideTop" />
                     <Tooltip allowEscapeViewBox={{"x":true,"y":true}} animationDuration={0} formatter={formatDiskSpace}/>
-                    <Line dataKey="disk_used" stroke="#84d8d5" formatter={formatDiskSpace} />
+                    <Line isAnimationActive={false} dataKey="disk_used" stroke="#84d8d5" formatter={formatDiskSpace} />
                     <XAxis dataKey="timestamp" />
                     <YAxis type="number" domain={[0, 1099511627776]} tickFormatter={formatDiskSpace} />
                 </LineChart>
