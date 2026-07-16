@@ -3,16 +3,18 @@ import axios from 'axios';
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis, Legend, matchByDataKey, Label, BarChart, Bar, ResponsiveContainer, DefaultZIndexes} from 'recharts';
 import './mainpage.css';
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label, formatter}) => {
+    // console.log(payload)
+    // console.log(formatter)
+
   if (active && payload && payload.length) {
     return (
       <div className="custom-tooltip">
         <p className="label">{`${label} : ${payload[0].value}`}</p>
         <div>
           {payload.map((pld) => (
-            <p style={{ display: "flex", padding: 10 }}>
-              <div style={{ color: pld.fill }}>{pld.value}</div>
-              <div> {pld.dataKey}</div>
+            <p style={{ display: "flex", padding: 5, color: pld.stroke}}>
+              {pld.name}: {formatter(pld.value)}
             </p>
           ))}
         </div>
@@ -28,8 +30,8 @@ export default function MainPage() {
     const [metrics, setMetrics] = useState([]);
     const [currentMetrics, setCurrentMetrics] = useState([]);
 
-    const formatPercent = (value) => `${value}%`;
-    const formatDiskSpace = (value) => `${(value / (1024 * 1024 * 1024)).toFixed(0)}GB`;
+    const formatPercent = (value) => `${value.toFixed(1)}%`;
+    const formatDiskSpace = (value) => `${(value / (1024 * 1024 * 1024)).toFixed(2)}GB`;
 
 
 
@@ -92,12 +94,12 @@ export default function MainPage() {
                     <CartesianGrid strokeDasharray="2 2"/>
                     <Label  style={{ textAnchor: 'middle' }} value="CPU Usage" position="insideTop"/>
                     {/* <Tooltip contentStyle={{backgroundColor: '#901a1a'}} wrapperStyle={{zIndex: 1000, backgroundColor: '#901a1a'}} className='chart-tooltip' allowEscapeViewBox={{"x":true,"y":true}} animationDuration={0} formatter={formatPercent}/> */}
-                    <Tooltip allowEscapeViewBox={{"x":true,"y":true}} wrapperStyle={{zIndex: 1000, backgroundColor: '#901a1a'}} animationDuration={0} formatter={formatPercent} content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
+                    <Tooltip allowEscapeViewBox={{"x":true,"y":true}} unit='%' wrapperStyle={{zIndex: 1000}} animationDuration={0} content={<CustomTooltip formatter={formatPercent}/>}/>
                     {/* <CustomTooltip/> */}
-                    <Legend verticalAlign="top" align="right" />
-                    <Line isAnimationActive={false} type="monotone" dot={{}} dataKey="cpu_usage_max" stroke="#d88484" />
-                    <Line isAnimationActive={false} type="monotone" dot={{}} dataKey="cpu_usage_avg" stroke="#d8d184"/>
-                    <Line isAnimationActive={false} type="monotone" dot={{}} dataKey="cpu_usage_min" stroke="#84d8d5" />
+                    {/* <Legend verticalAlign="top" align="right" /> */}
+                    <Line isAnimationActive={false} type="monotone" name="CPU Max" dataKey="cpu_usage_max" stroke="#d88484" />
+                    <Line isAnimationActive={false} type="monotone" name="CPU Avg" dataKey="cpu_usage_avg" stroke="#d8d184"/>
+                    <Line isAnimationActive={false} type="monotone" name="CPU Min" dataKey="cpu_usage_min" stroke="#84d8d5" />
 
                     <XAxis dataKey="timestamp" />
                     <YAxis type="number" domain={[0, 100]} />
@@ -105,19 +107,19 @@ export default function MainPage() {
                 </LineChart>
                 <LineChart className='metric-chart' style={{ width: '100%', aspectRatio: 1.618, maxWidth: 600 }} responsive data={metrics}>
                     <CartesianGrid />
+                    <Tooltip allowEscapeViewBox={{"x":true,"y":true}} unit='%' wrapperStyle={{zIndex: 1000}} animationDuration={0} content={<CustomTooltip formatter={formatPercent}/>}/>
                     <Label style={{ textAnchor: 'middle' }} value="RAM Usage" position="insideTop" />
-                    <Line isAnimationActive={false} type="monotone" dataKey="ram_usage_max" stroke="#d88484" />
-                    <Line isAnimationActive={false} type="monotone" dataKey="ram_usage_avg"  stroke="#d8d184"/>
-                    <Line isAnimationActive={false} type="monotone" dataKey="ram_usage_min"  stroke="#84d8d5" />
-
+                    <Line isAnimationActive={false} name="Ram usage max" type="monotone" dataKey="ram_usage_max" stroke="#d88484" />
+                    <Line isAnimationActive={false} name="Ram usage avg" type="monotone" dataKey="ram_usage_avg"  stroke="#d8d184"/>
+                    <Line isAnimationActive={false} name="Ram usage min" type="monotone" dataKey="ram_usage_min"  stroke="#84d8d5" />
                     <XAxis dataKey="timestamp" />
                     <YAxis type="number" domain={[0, 100]} />
                 </LineChart>
                 <LineChart className='metric-chart' style={{ width: '100%', aspectRatio: 1.618, maxWidth: 600 }} responsive data={metrics}>
                     <CartesianGrid />
                     <Label style={{ textAnchor: 'middle' }} value="Disk Space" position="insideTop" />
-                    <Tooltip allowEscapeViewBox={{"x":true,"y":true}} animationDuration={0} formatter={formatDiskSpace}/>
-                    <Line isAnimationActive={false} dataKey="disk_used" stroke="#84d8d5" formatter={formatDiskSpace} />
+                    <Tooltip allowEscapeViewBox={{"x":true,"y":true}} unit='%' wrapperStyle={{zIndex: 1000}} animationDuration={0} content={<CustomTooltip formatter={formatDiskSpace}/>}/>
+                    <Line isAnimationActive={false} name='Disk used' dataKey="disk_used" stroke="#84d8d5" formatter={formatDiskSpace} />
                     <XAxis dataKey="timestamp" />
                     <YAxis type="number" domain={[0, 1099511627776]} tickFormatter={formatDiskSpace} />
                 </LineChart>
